@@ -13,6 +13,8 @@ extern "C"
 
 #include "formatCtx.h"
 #include "codecCtx.h"
+#include "frame.h"
+#include "buffer.h"
 
 using namespace std;
 
@@ -126,24 +128,27 @@ int main(int argc, char* argv[]) {
         
 
       // Allocate video frame (from source video)
-    AVFrame* pFrame = NULL;
-    pFrame = av_frame_alloc();
-    if (pFrame == NULL) {
+    //AVFrame* pFrame = NULL;
+    frame pFrame;
+    pFrame.fr = av_frame_alloc();
+    if (pFrame.fr == NULL) {
         cout << "video (source) frame allocation error\n";
         return -1;
     }
 
     // Allocate an AVFrame structure (for conversion result)
-    AVFrame* pFrameRGB = NULL;
-    pFrameRGB = av_frame_alloc();
-    if (pFrameRGB == NULL) {
+    //AVFrame* pFrameRGB = NULL;
+    frame pFrameRGB;
+    pFrameRGB.fr = av_frame_alloc();
+    if (pFrameRGB.fr == NULL) {
         cout << "frame (result) allocation error\n";
         return -1;
     }
 
     // Determine required buffer size and allocate buffer
     int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, pCodecCtx.ctx->width, pCodecCtx.ctx->height, 1);
-    uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+    buffer buff(numBytes);
+    //uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
 
     // allocate SwsContext (image scaling)
     struct SwsContext* sws_ctx = NULL;
@@ -166,7 +171,7 @@ int main(int argc, char* argv[]) {
     // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
     // of AVPicture
 
-    av_image_fill_arrays(pFrameRGB->data, pFrameRGB->linesize, buffer, AV_PIX_FMT_RGB24, pCodecCtx.ctx->width, pCodecCtx.ctx->height, 1);
+    av_image_fill_arrays(pFrameRGB.fr->data, pFrameRGB.fr->linesize, buff.buff, AV_PIX_FMT_RGB24, pCodecCtx.ctx->width, pCodecCtx.ctx->height, 1);
 
     // Read frames and save first five frames to disk
     int i = 0;
@@ -179,23 +184,23 @@ int main(int argc, char* argv[]) {
             avcodec_send_packet(pCodecCtx.ctx, &packet);
 
             // Did we get a video frame?
-            if (avcodec_receive_frame(pCodecCtx.ctx, pFrame) == 0) {
+            if (avcodec_receive_frame(pCodecCtx.ctx, pFrame.fr) == 0) {
                 //    if (frameFinished) {
                     // Convert the image from its native format to RGB
                 sws_scale
                 (
                     sws_ctx,
-                    (uint8_t const* const*)pFrame->data,
-                    pFrame->linesize,
+                    (uint8_t const* const*)pFrame.fr->data,
+                    pFrame.fr->linesize,
                     0,
                     pCodecCtx.ctx->height,
-                    pFrameRGB->data,
-                    pFrameRGB->linesize
+                    pFrameRGB.fr->data,
+                    pFrameRGB.fr->linesize
                 );
 
                 // Save the frame to disk
                 if (++i <= 5)
-                    SaveFrame(pFrameRGB, pCodecCtx.ctx->width, pCodecCtx.ctx->height, i);
+                    SaveFrame(pFrameRGB.fr, pCodecCtx.ctx->width, pCodecCtx.ctx->height, i);
             }
         }
 
@@ -206,11 +211,11 @@ int main(int argc, char* argv[]) {
     // avcodec_free_context(&pCodecCtx);
 
      // Free the RGB image
-    av_free(buffer);
-    av_free(pFrameRGB);
+    //av_free(buffer);
+    //av_free(pFrameRGB);
 
     // Free the YUV frame
-    av_free(pFrame);
+    //av_free(pFrame);
 
     // Close the codec
     //avcodec_close(pCodecCtx);
