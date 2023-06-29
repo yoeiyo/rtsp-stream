@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     //AVFormatContext* pFormatCtx = NULL;
     formatCtx pFormatCtx;
     int fun = avformat_open_input(&pFormatCtx.ctx, argv[1], NULL, NULL);
-    if (fun != 0) {// sometimes stuck here; not sure what the problem is
+    if (fun < 0) {// sometimes stuck here; not sure what the problem is
         // most likely it can't properly connect
         // stuck at line 755 (ret = ff_rtsp_connect(s);) in rtspdec.c
 
