@@ -16,7 +16,7 @@ extern "C"
 #include "frame.h"
 #include "buffer.h"
 
-using namespace std;
+//using namespace std;
 
 void SaveFrame(AVFrame* pFrame, int width, int height, int iFrame) {
     FILE* pFile;
@@ -47,10 +47,11 @@ int main(int argc, char* argv[]) {
     
 
     if (argc < 2) {
-        cout << "Please provide source\n";
+        std::cout << "Please provide source\n";
         return -1;
     }
 
+    std::cout << "trying to connect...\n";
 
     // Open video file
     //AVFormatContext* pFormatCtx = NULL;
@@ -59,17 +60,21 @@ int main(int argc, char* argv[]) {
     if (fun != 0) {// sometimes stuck here; not sure what the problem is
         // most likely it can't properly connect
         // stuck at line 755 (ret = ff_rtsp_connect(s);) in rtspdec.c
-        cout << "couldn't connect\n";
+
+        std::cout << "couldn't connect\n";
         return -1; // Couldn't open file
     }
+    std::cout << "connection successful\n";
+    std::cout << "trying to find stream info...\n";
 
 
       // Retrieve stream information
     fun = avformat_find_stream_info(pFormatCtx.ctx, NULL);
     if (fun < 0) {
-        cout << "Couldn't find stream information\n";
+        std::cout << "Couldn't find stream information\n";
         return -1; // Couldn't find stream information
     }
+    std::cout << "found stream information\n";
         
 
       // Dump information about file onto standard error
@@ -82,12 +87,12 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < pFormatCtx.ctx->nb_streams; i++)
         if (pFormatCtx.ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
             videoStream = i;
-            cout << "found a video stream\n";
+            std::cout << "found a video stream\n";
             break;
         }
     if (videoStream == -1)
     {
-        cout << "Didn't find a video stream\n";
+        std::cout << "Didn't find a video stream\n";
         return -1; // Didn't find a video stream
     }
 
@@ -96,35 +101,39 @@ int main(int argc, char* argv[]) {
     codecCtx pCodecCtx;
     pCodecCtx.ctx = avcodec_alloc_context3(NULL);
     if (pCodecCtx.ctx == NULL) {
-        cout << "codec context allocation error\n";
+        std::cout << "codec context allocation error\n";
         return -1;
     }
+    std::cout << "codec context allocated\n";
         
 
     fun = avcodec_parameters_to_context(pCodecCtx.ctx, pFormatCtx.ctx->streams[videoStream]->codecpar);
 
     if (fun < 0)
     {
-        cout << "couldn't convert codec parameters to context\n";
+        std::cout << "couldn't convert codec parameters to context\n";
         return -1;
     }
 
+    std::cout << "codec parameters converted to context\n";
 
     // Find the decoder for the video stream
     AVCodec* pCodec = NULL;
     pCodec = const_cast <AVCodec*> (avcodec_find_decoder(pCodecCtx.ctx->codec_id));
     if (pCodec == NULL) {
-        cout << stderr << "Unsupported codec!\n";
+        std::cout << stderr << "Unsupported codec!\n";
         return -1; // Codec not found
     }
+    std::cout << "found the decoder\n";
 
     // Open codec
     AVDictionary* optionsDict = NULL;
     fun = avcodec_open2(pCodecCtx.ctx, pCodec, &optionsDict);
     if (fun < 0) {
-        cout << "Could not open codec\n";
+        std::cout << "Could not open codec\n";
         return -1; // Could not open codec
     }
+    std::cout << "opened codec\n";
         
 
       // Allocate video frame (from source video)
@@ -132,7 +141,7 @@ int main(int argc, char* argv[]) {
     frame pFrame;
     pFrame.fr = av_frame_alloc();
     if (pFrame.fr == NULL) {
-        cout << "video (source) frame allocation error\n";
+        std::cout << "video (source) frame allocation error\n";
         return -1;
     }
 
@@ -141,9 +150,11 @@ int main(int argc, char* argv[]) {
     frame pFrameRGB;
     pFrameRGB.fr = av_frame_alloc();
     if (pFrameRGB.fr == NULL) {
-        cout << "frame (result) allocation error\n";
+        std::cout << "frame (result) allocation error\n";
         return -1;
     }
+
+    std::cout << "allocated frames\n";
 
     // Determine required buffer size and allocate buffer
     int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, pCodecCtx.ctx->width, pCodecCtx.ctx->height, 1);
@@ -151,21 +162,8 @@ int main(int argc, char* argv[]) {
     //uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
 
     // allocate SwsContext (image scaling)
-    struct SwsContext* sws_ctx = NULL;
-    sws_ctx =
-        sws_getContext
-        (
-            pCodecCtx.ctx->width,
-            pCodecCtx.ctx->height,
-            pCodecCtx.ctx->pix_fmt,
-            pCodecCtx.ctx->width,
-            pCodecCtx.ctx->height,
-            AV_PIX_FMT_RGB24,
-            SWS_BILINEAR,
-            NULL,
-            NULL,
-            NULL
-        );
+    struct SwsContext* sws_ctx = sws_getContext(pCodecCtx.ctx->width, pCodecCtx.ctx->height, pCodecCtx.ctx->pix_fmt, 
+        pCodecCtx.ctx->width, pCodecCtx.ctx->height, AV_PIX_FMT_RGB24, SWS_BILINEAR, NULL, NULL, NULL);
 
     // Assign appropriate parts of buffer to image planes in pFrameRGB
     // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
@@ -187,19 +185,12 @@ int main(int argc, char* argv[]) {
             if (avcodec_receive_frame(pCodecCtx.ctx, pFrame.fr) == 0) {
                 //    if (frameFinished) {
                     // Convert the image from its native format to RGB
-                sws_scale
-                (
-                    sws_ctx,
-                    (uint8_t const* const*)pFrame.fr->data,
-                    pFrame.fr->linesize,
-                    0,
-                    pCodecCtx.ctx->height,
-                    pFrameRGB.fr->data,
-                    pFrameRGB.fr->linesize
-                );
+                sws_scale(sws_ctx, (uint8_t const* const*)pFrame.fr->data, pFrame.fr->linesize, 0,
+                    pCodecCtx.ctx->height, pFrameRGB.fr->data, pFrameRGB.fr->linesize);
 
                 // Save the frame to disk
                 if (++i <= 5)
+              //  i++;
                     SaveFrame(pFrameRGB.fr, pCodecCtx.ctx->width, pCodecCtx.ctx->height, i);
             }
         }
