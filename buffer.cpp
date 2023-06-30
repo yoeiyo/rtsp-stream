@@ -1,13 +1,14 @@
 #include "buffer.h"
 
-buffer::buffer() {
-	buff = NULL;
+Tbuffer::Tbuffer() {
+	m_buff = nullptr;
 }
 
-buffer::buffer(int numBytes) {
-	buff = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+Tbuffer::Tbuffer(int numBytes) {
+	m_buff = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
 }
 
-buffer::~buffer() {
-	av_free(buff);
+Tbuffer::~Tbuffer() {
+	if(m_buff)
+	av_free(m_buff);
 }

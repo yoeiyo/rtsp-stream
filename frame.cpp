@@ -1,11 +1,12 @@
 #include "frame.h"
 
-frame::frame() {
-	fr = NULL;
+Tframe::Tframe() {
+	m_fr = nullptr;
 	//buff = NULL;
 }
 
-frame::~frame() {
-	av_free(fr);
+Tframe::~Tframe() {
+	if (m_fr)
+	av_free(m_fr);
 //	av_free(buff);
 }

@@ -4,13 +4,13 @@ extern "C" {
 }
 
 
-class formatCtx
+class TformatCtx
 {
 public:
-	AVFormatContext* ctx; 
+	AVFormatContext* m_ctx; 
 
-	formatCtx();
-	~formatCtx();
+	TformatCtx();
+	~TformatCtx();
 
 	/*
 	int openCtx_input(char* inp_url);

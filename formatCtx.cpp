@@ -1,9 +1,10 @@
 #include "formatCtx.h"
 
-formatCtx::formatCtx() {
-	ctx = NULL;
+TformatCtx::TformatCtx() {
+	m_ctx = nullptr;
 }
 
-formatCtx::~formatCtx() {
-	avformat_close_input(&ctx);
+TformatCtx::~TformatCtx() {
+	if (m_ctx)
+	avformat_close_input(&m_ctx);
 }

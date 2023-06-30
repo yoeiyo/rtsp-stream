@@ -3,11 +3,11 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 }
 
-class codecCtx
+class TcodecCtx
 {
 public:
-	AVCodecContext* ctx;
-	codecCtx();
-	~codecCtx();
+	AVCodecContext* m_ctx;
+	TcodecCtx();
+	~TcodecCtx();
 };
 

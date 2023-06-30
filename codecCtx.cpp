@@ -1,9 +1,10 @@
 #include "codecCtx.h"
 
-codecCtx::codecCtx() {
-	ctx = NULL;
+TcodecCtx::TcodecCtx() {
+	m_ctx = nullptr;
 }
 
-codecCtx::~codecCtx() {
-	avcodec_close(ctx);
+TcodecCtx::~TcodecCtx() {
+	if (m_ctx)
+	avcodec_close(m_ctx);
 }

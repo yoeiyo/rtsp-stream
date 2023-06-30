@@ -144,12 +144,14 @@
     <ClCompile Include="formatCtx.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="rstp2.cpp" />
+    <ClCompile Include="TPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="buffer.h" />
     <ClInclude Include="codecCtx.h" />
     <ClInclude Include="formatCtx.h" />
     <ClInclude Include="frame.h" />
+    <ClInclude Include="TPacket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

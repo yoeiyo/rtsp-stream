@@ -3,11 +3,11 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
-class frame
+class Tframe
 {
 public: 
-	AVFrame* fr;
+	AVFrame* m_fr;
 	//uint8_t* buff;
-	frame();
-	~frame();
+	Tframe();
+	~Tframe();
 };
