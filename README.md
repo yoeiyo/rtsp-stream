@@ -6,6 +6,30 @@
 2. медленная прорисовка кадров
    
 
+## Запуск стрима
+
+# Через vlc: 
+
+vlc C:\Users\Lenovo\Documents\sample.mp4 --sout="#rtp{sdp=rtsp://:8554/stream}"
+Затем для подключения используем адрес 'rtsp://localhost:8554/stream'
+
+# vlc gui
+
+1. Media -> Stream (Ctrl + S)
+2. Add the video file
+![image](https://github.com/yoeiyo/rtsp-stream/assets/106560105/89f679c9-7509-407f-8330-e18586f00635)
+4. Stream -> Next
+5. New destination: rtsp -> add
+![image](https://github.com/yoeiyo/rtsp-stream/assets/106560105/23c48ab7-a783-4dfa-8015-b26ae56d3cf0)
+![image](https://github.com/yoeiyo/rtsp-stream/assets/106560105/74eb0fe8-c2b1-45a6-9fdd-b86243c5fed9)
+
+
+   После этого просто продолжать дальше, отмеченные/неотмеченные чекбоксы не влияют на запуск или подключение
+Для подключения используем адрес 'rtsp://localhost:8554/'
+
+
+
+
 ## Текущее
 
 Текущая версия - rstp2
