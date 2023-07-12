@@ -31,7 +31,17 @@ vlc C:\Users\Lenovo\Documents\sample.mp4 --sout="#rtp{sdp=rtsp://:8554/stream}"
    После этого просто продолжать дальше, отмеченные/неотмеченные чекбоксы не влияют на запуск или подключение
 Для подключения используем адрес 'rtsp://localhost:8554/'
 
+***
 
+https://www.gyan.dev/ffmpeg/builds/ 
+
+http://trac.ffmpeg.org/wiki/StreamingGuide#:~:text=FFmpeg%20can%20stream%20a%20single,a%20live%20streaming%20%E2%80%8Bsource
+
+## конвертирование библиотек (bcc)
+
+implib.exe -a /s lib_name.lib dll_name.dll
+
+(replaces lib_name.lib)
 
 
 ## Текущее
